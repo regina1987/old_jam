@@ -25,6 +25,8 @@ class CommentsController < ApplicationController
   # POST /comments.json
   def create
     @comment = Comment.new(comment_params)
+    @comment.post = Post.find(params[:post_id])
+    @comment.user = current_user
     # PENDING: ADD the current user to the comment
 
     respond_to do |format|
@@ -41,6 +43,7 @@ class CommentsController < ApplicationController
   # PATCH/PUT /comments/1
   # PATCH/PUT /comments/1.json
   def update
+
     respond_to do |format|
       if @comment.update(comment_params)
         format.html { redirect_to @comment, notice: 'Comment was successfully updated.' }
@@ -49,17 +52,22 @@ class CommentsController < ApplicationController
         format.html { render :edit }
         format.json { render json: @comment.errors, status: :unprocessable_entity }
       end
+
     end
   end
 
   # DELETE /comments/1
   # DELETE /comments/1.json
   def destroy
+    if current_user.admin? || @comment.user == current_user
     @comment.destroy
     respond_to do |format|
       format.html { redirect_to comments_url, notice: 'Comment was successfully destroyed.' }
       format.json { head :no_content }
     end
+  else
+    redirect_to comments_path, notice: 'nonono'
+  end
   end
 
   private
