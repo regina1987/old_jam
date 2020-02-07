@@ -9,20 +9,22 @@ Comment.delete_all
 Post.delete_all
 User.delete_all
 
-User.create([{ name: 'Alice' }, { name: 'Bob'}, {name: 'James'}])
+User.create([{ name: 'Alice', email: 'alice@com', password: 123456 },
+            { name: 'Bob', email: 'bo@com', password: 123456},
+            {name: 'James', email: 'james@com', password: 123456}])
 
 10.times do
   rand = rand(0..7)
   user = User.order('RANDOM()').first
   post = Post.create(
-    title: Faker::Lorem.sentence(3),
+    title: Faker::Lorem.sentence(word_count: 3),
     content: Faker::Lorem.paragraphs,
-    image: Faker::LoremPixel.image('300x200'),
+    image: Faker::LoremPixel.image(size: '300x200'),
     user: user
   )
   rand.times do
     post.comments.create(
-      content: Faker::Lorem.sentence(3),
+      content: Faker::Lorem.sentence(word_count: 3),
       user: User.where.not(id: user.id).order('RANDOM()').first
     )
   post.save
